@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Where Can I Go?</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <section class="hero-section">
+    <div class="hero-content">
+      <h1>Where Can I Go?</h1>
+      <p>Find out where you can travel visa-free with your passport and existing visas. Get holiday recommendations within your budget.</p>
+      <button id="startBtn">Find Out More</button>
+    </div>
+  </section>
+
+  <div class="form-overlay" id="formOverlay">
+    <form id="travelForm" class="form-content" action="https://formsubmit.co/cheloghm007@gmail.com" method="POST">
+      <div class="progress-bar-container">
+        <div class="progress-bar-fill"></div>
+      </div>
+
+      <div class="form-step">
+        <label>Select your passport country (you can select multiple):</label>
+        <div class="checkbox-group" id="passportCountries"></div>
+        <div class="form-navigation">
+          <button type="button" class="next-btn">Next</button>
+        </div>
+      </div>
+
+      <div class="form-step">
+        <label>Select countries where you are a permanent resident:</label>
+        <div class="checkbox-group" id="residencyCountries"></div>
+        <div class="form-navigation">
+          <button type="button" class="back-btn">Back</button>
+          <button type="button" class="skip-btn">Skip</button>
+          <button type="button" class="next-btn">Next</button>
+        </div>
+      </div>
+
+      <div class="form-step">
+        <label>Select countries you have visas for:</label>
+        <div class="checkbox-group" id="visaCountries"></div>
+        <div class="form-navigation">
+          <button type="button" class="back-btn">Back</button>
+          <button type="button" class="skip-btn">Skip</button>
+          <button type="button" class="next-btn">Next</button>
+        </div>
+      </div>
+
+      <div class="form-step">
+        <label>Select types of visas you hold:</label>
+        <div class="checkbox-group" id="visaTypes">
+          <label class="checkbox-tag"><input type="checkbox" name="visaTypes[]" value="Tourist">Tourist</label>
+          <label class="checkbox-tag"><input type="checkbox" name="visaTypes[]" value="Business">Business</label>
+          <label class="checkbox-tag"><input type="checkbox" name="visaTypes[]" value="Student">Student</label>
+          <label class="checkbox-tag"><input type="checkbox" name="visaTypes[]" value="Permanent Resident">Permanent Resident</label>
+          <label class="checkbox-tag"><input type="checkbox" name="visaTypes[]" value="Other">Other</label>
+        </div>
+        <div id="otherVisaInputContainer" style="display:none; margin-top:10px;">
+          <input type="text" name="otherVisaType" placeholder="Enter your type of visa here">
+        </div>
+        <div class="form-navigation">
+          <button type="button" class="back-btn">Back</button>
+          <button type="button" class="skip-btn">Skip</button>
+          <button type="button" class="next-btn">Next</button>
+        </div>
+      </div>
+
+      <div class="form-step">
+        <label>Your travel budget (USD):</label>
+        <input type="number" name="budget" required />
+        <div class="form-navigation">
+          <button type="button" class="back-btn">Back</button>
+          <button type="button" class="next-btn">Next</button>
+        </div>
+      </div>
+
+      <div class="form-step">
+        <label>Your email address:</label>
+        <input type="email" name="email" required />
+        <div class="form-navigation">
+          <button type="button" class="back-btn">Back</button>
+          <button type="button" class="next-btn">Next</button>
+        </div>
+      </div>
+
+      <div class="form-step">
+        <label>How many times do you intend to travel this year?</label>
+        <div class="checkbox-group">
+          <label class="checkbox-tag"><input type="radio" name="frequency" value="1–2 times" required>1–2 times</label>
+          <label class="checkbox-tag"><input type="radio" name="frequency" value="3–4 times">3–4 times</label>
+          <label class="checkbox-tag"><input type="radio" name="frequency" value="5+ times">5+ times</label>
+        </div>
+        <div class="form-navigation">
+          <button type="button" class="back-btn">Back</button>
+          <button type="button" class="next-btn">Next</button>
+        </div>
+      </div>
+
+      <div class="form-step">
+        <label>Your full name:</label>
+        <input type="text" name="name" required />
+        <input type="hidden" name="_next" value="thank-you.html">
+        <input type="hidden" name="_captcha" value="false">
+        <input type="hidden" name="_template" value="table">
+        <div class="form-navigation">
+          <button type="button" class="back-btn">Back</button>
+          <button type="submit">Submit</button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    const countries = [
+      "Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Antigua and Barbuda", "Argentina", "Armenia",
+      "Australia", "Austria", "Azerbaijan", "Bahamas", "Bahrain", "Bangladesh", "Barbados", "Belarus", "Belgium",
+      "Belize", "Benin", "Bhutan", "Bolivia", "Bosnia and Herzegovina", "Botswana", "Brazil", "Brunei", "Bulgaria",
+      "Burkina Faso", "Burundi", "Cabo Verde", "Cambodia", "Cameroon", "Canada", "Central African Republic", "Chad",
+      "Chile", "China", "Colombia", "Comoros", "Congo (Congo-Brazzaville)", "Costa Rica", "Croatia", "Cuba",
+      "Cyprus", "Czechia (Czech Republic)", "Democratic Republic of the Congo", "Denmark", "Djibouti", "Dominica",
+      "Dominican Republic", "Ecuador", "Egypt", "El Salvador", "Equatorial Guinea", "Eritrea", "Estonia", "Eswatini",
+      "Ethiopia", "Fiji", "Finland", "France", "Gabon", "Gambia", "Georgia", "Germany", "Ghana", "Greece", "Grenada",
+      "Guatemala", "Guinea", "Guinea-Bissau", "Guyana", "Haiti", "Honduras", "Hungary", "Iceland", "India",
+      "Indonesia", "Iran", "Iraq", "Ireland", "Israel", "Italy", "Ivory Coast", "Jamaica", "Japan", "Jordan",
+      "Kazakhstan", "Kenya", "Kiribati", "Kuwait", "Kyrgyzstan", "Laos", "Latvia", "Lebanon", "Lesotho", "Liberia",
+      "Libya", "Liechtenstein", "Lithuania", "Luxembourg", "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali",
+      "Malta", "Marshall Islands", "Mauritania", "Mauritius", "Mexico", "Micronesia", "Moldova", "Monaco", "Mongolia",
+      "Montenegro", "Morocco", "Mozambique", "Myanmar (formerly Burma)", "Namibia", "Nauru", "Nepal", "Netherlands",
+      "New Zealand", "Nicaragua", "Niger", "Nigeria", "North Korea", "North Macedonia", "Norway", "Oman", "Pakistan",
+      "Palau", "Palestine State", "Panama", "Papua New Guinea", "Paraguay", "Peru", "Philippines", "Poland",
+      "Portugal", "Qatar", "Romania", "Russia", "Rwanda", "Saint Kitts and Nevis", "Saint Lucia",
+      "Saint Vincent and the Grenadines", "Samoa", "San Marino", "Sao Tome and Principe", "Saudi Arabia", "Senegal",
+      "Serbia", "Seychelles", "Sierra Leone", "Singapore", "Slovakia", "Slovenia", "Solomon Islands", "Somalia",
+      "South Africa", "South Korea", "South Sudan", "Spain", "Sri Lanka", "Sudan", "Suriname", "Sweden", "Switzerland",
+      "Syria", "Tajikistan", "Tanzania", "Thailand", "Timor-Leste", "Togo", "Tonga", "Trinidad and Tobago", "Tunisia",
+      "Turkey", "Turkmenistan", "Tuvalu", "Uganda", "Ukraine", "United Arab Emirates", "United Kingdom",
+      "United States of America", "Uruguay", "Uzbekistan", "Vanuatu", "Vatican City", "Venezuela", "Vietnam",
+      "Yemen", "Zambia", "Zimbabwe"
+    ];
+
+    function createTags(containerId) {
+      const container = document.getElementById(containerId);
+      const inputName = containerId.replace('Countries', ''); // passportCountries → passport
+      countries.forEach(country => {
+        const label = document.createElement('label');
+        label.className = 'checkbox-tag';
+        label.innerHTML = `<input type="checkbox" name="${inputName}[]" value="${country}">${country}`;
+        container.appendChild(label);
+      });
+    }
+
+    ['passportCountries', 'residencyCountries', 'visaCountries'].forEach(createTags);
+
+    const formOverlay = document.getElementById('formOverlay');
+    const startBtn = document.getElementById('startBtn');
+    const form = document.getElementById('travelForm');
+    const formSteps = document.querySelectorAll('.form-step');
+    const progressBarFill = document.querySelector('.progress-bar-fill');
+    let currentStep = 0;
+
+    startBtn.addEventListener('click', () => {
+      formOverlay.classList.add('visible');
+    });
+
+    function showStep(step) {
+      formSteps.forEach((s, i) => s.style.display = i === step ? 'block' : 'none');
+      updateProgressBar();
+    }
+
+    function updateProgressBar() {
+      const percent = ((currentStep + 1) / formSteps.length) * 100;
+      progressBarFill.style.width = percent + '%';
+    }
+
+    document.addEventListener('click', function(e) {
+      if (e.target.matches('.next-btn')) {
+        currentStep = Math.min(currentStep + 1, formSteps.length - 1);
+        showStep(currentStep);
+      } else if (e.target.matches('.back-btn')) {
+        currentStep = Math.max(currentStep - 1, 0);
+        showStep(currentStep);
+      } else if (e.target.matches('.skip-btn')) {
+        currentStep = Math.min(currentStep + 1, formSteps.length - 1);
+        showStep(currentStep);
+      }
+    });
+
+    form.addEventListener('change', (e) => {
+      if (e.target.name === "visaTypes[]") {
+        const otherInput = document.getElementById("otherVisaInputContainer");
+        const isOtherSelected = [...form.querySelectorAll('input[name="visaTypes[]"]')].some(i => i.value === "Other" && i.checked);
+        otherInput.style.display = isOtherSelected ? "block" : "none";
+      }
+    });
+
+    document.addEventListener('change', function(e) {
+      if (e.target.closest('.checkbox-tag')) {
+        e.target.closest('.checkbox-tag').classList.toggle('selected', e.target.checked);
+      }
+    });
+
+    showStep(currentStep);
+  </script>
+</body>
+</html>
