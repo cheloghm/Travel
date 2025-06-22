@@ -4,7 +4,7 @@ body {
   margin: 0;
   padding: 0;
   font-family: 'Segoe UI', sans-serif;
-  background: url('https://source.unsplash.com/1600x900/?travel') no-repeat center center fixed;
+  background: url('img/bg.png') no-repeat center center fixed;
   background-size: cover;
   color: #fff;
 }
