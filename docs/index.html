@@ -5,6 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Where Can I Go?</title>
   <link rel="stylesheet" href="styles.css" />
+  <style>
+    .validation-message {
+      color: red;
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
+      display: none;
+    }
+  </style>
 </head>
 <body>
   <section class="hero-section">
@@ -21,14 +29,17 @@
         <div class="progress-bar-fill"></div>
       </div>
 
+      <!-- Step 1: Passport -->
       <div class="form-step">
         <label>Select your passport country (you can select multiple):</label>
         <div class="checkbox-group" id="passportCountries"></div>
+        <div class="validation-message">Please select at least one passport country.</div>
         <div class="form-navigation">
           <button type="button" class="next-btn">Next</button>
         </div>
       </div>
 
+      <!-- Step 2: Residency -->
       <div class="form-step">
         <label>Select countries where you are a permanent resident:</label>
         <div class="checkbox-group" id="residencyCountries"></div>
@@ -39,6 +50,7 @@
         </div>
       </div>
 
+      <!-- Step 3: Visas -->
       <div class="form-step">
         <label>Select countries you have visas for:</label>
         <div class="checkbox-group" id="visaCountries"></div>
@@ -49,6 +61,7 @@
         </div>
       </div>
 
+      <!-- Step 4: Visa Types -->
       <div class="form-step">
         <label>Select types of visas you hold:</label>
         <div class="checkbox-group" id="visaTypes">
@@ -61,6 +74,7 @@
         <div id="otherVisaInputContainer" style="display:none; margin-top:10px;">
           <input type="text" name="otherVisaType" placeholder="Enter your type of visa here">
         </div>
+        <div class="validation-message">Please select at least one visa type.</div>
         <div class="form-navigation">
           <button type="button" class="back-btn">Back</button>
           <button type="button" class="skip-btn">Skip</button>
@@ -68,6 +82,7 @@
         </div>
       </div>
 
+      <!-- Step 5: Budget -->
       <div class="form-step">
         <label>Your travel budget (USD):</label>
         <input type="number" name="budget" required />
@@ -77,6 +92,7 @@
         </div>
       </div>
 
+      <!-- Step 6: Email -->
       <div class="form-step">
         <label>Your email address:</label>
         <input type="email" name="email" required />
@@ -86,6 +102,7 @@
         </div>
       </div>
 
+      <!-- Step 7: Travel Frequency -->
       <div class="form-step">
         <label>How many times do you intend to travel this year?</label>
         <div class="checkbox-group">
@@ -99,18 +116,40 @@
         </div>
       </div>
 
+      <!-- Step 8: Full Name -->
       <div class="form-step">
         <label>Your full name:</label>
         <input type="text" name="name" required />
-        <input type="hidden" name="_next" value="thank-you.html">
-        <input type="hidden" name="_captcha" value="false">
-        <input type="hidden" name="_template" value="table">
         <div class="form-navigation">
           <button type="button" class="back-btn">Back</button>
           <button type="button" class="next-btn">Next</button>
         </div>
       </div>
 
+      <!-- Step 9: Travel Interests -->
+      <div class="form-step">
+        <label>Select your travel and holiday interests:</label>
+        <div class="checkbox-group">
+          <label class="checkbox-tag"><input type="checkbox" name="interests[]" value="Nature and Wildlife">Nature and Wildlife</label>
+          <label class="checkbox-tag"><input type="checkbox" name="interests[]" value="Beach Relaxation">Beach Relaxation</label>
+          <label class="checkbox-tag"><input type="checkbox" name="interests[]" value="Adventure and Hiking">Adventure and Hiking</label>
+          <label class="checkbox-tag"><input type="checkbox" name="interests[]" value="Cultural Festivals">Cultural Festivals</label>
+          <label class="checkbox-tag"><input type="checkbox" name="interests[]" value="Weekend Getaways">Weekend Getaways</label>
+          <label class="checkbox-tag"><input type="checkbox" name="interests[]" value="Family Trips">Family Trips</label>
+          <label class="checkbox-tag"><input type="checkbox" name="interests[]" value="Luxury Resorts">Luxury Resorts</label>
+          <label class="checkbox-tag"><input type="checkbox" name="interests[]" value="Solo Travel">Solo Travel</label>
+          <label class="checkbox-tag"><input type="checkbox" name="interests[]" value="Tech or Business Events">Tech or Business Events</label>
+          <label class="checkbox-tag"><input type="checkbox" name="interests[]" value="Shopping Trips">Shopping Trips</label>
+          <label class="checkbox-tag"><input type="checkbox" name="interests[]" value="Short Budget Trips">Short Budget Trips</label>
+        </div>
+        <div class="validation-message">Please select at least one travel interest.</div>
+        <div class="form-navigation">
+          <button type="button" class="back-btn">Back</button>
+          <button type="button" class="next-btn">Next</button>
+        </div>
+      </div>
+
+      <!-- Step 10: Travel Dreams -->
       <div class="form-step">
         <label>What kind of trip or experience do you wish you could take?</label>
         <textarea name="travelDreams" rows="4" placeholder="E.g. Backpacking through Europe, shopping in New York, luxury beach resort, attending a tech conference in Singapore..." required></textarea>
@@ -155,7 +194,7 @@
 
     function createTags(containerId) {
       const container = document.getElementById(containerId);
-      const inputName = containerId.replace('Countries', ''); // passportCountries → passport
+      const inputName = containerId.replace('Countries', '');
       countries.forEach(country => {
         const label = document.createElement('label');
         label.className = 'checkbox-tag';
@@ -163,7 +202,6 @@
         container.appendChild(label);
       });
     }
-
     ['passportCountries', 'residencyCountries', 'visaCountries'].forEach(createTags);
 
     const formOverlay = document.getElementById('formOverlay');
@@ -173,13 +211,12 @@
     const progressBarFill = document.querySelector('.progress-bar-fill');
     let currentStep = 0;
 
-    startBtn.addEventListener('click', () => {
-      formOverlay.classList.add('visible');
-    });
+    startBtn.addEventListener('click', () => formOverlay.classList.add('visible'));
 
     function showStep(step) {
       formSteps.forEach((s, i) => s.style.display = i === step ? 'block' : 'none');
       updateProgressBar();
+      hideValidationMessage(step);
     }
 
     function updateProgressBar() {
@@ -187,10 +224,34 @@
       progressBarFill.style.width = percent + '%';
     }
 
+    function validateCurrentStep() {
+      const currentFormStep = formSteps[currentStep];
+      const validationMsg = currentFormStep.querySelector('.validation-message');
+      const requiredGroups = [
+        "passport[]", "visaTypes[]", "interests[]"
+      ];
+      if (requiredGroups.some(name => currentFormStep.querySelector(`input[name="${name}"]`))) {
+        const inputs = currentFormStep.querySelectorAll('input[type="checkbox"]:checked');
+        if (inputs.length === 0) {
+          if (validationMsg) validationMsg.style.display = 'block';
+          return false;
+        }
+      }
+      if (validationMsg) validationMsg.style.display = 'none';
+      return true;
+    }
+
+    function hideValidationMessage(step) {
+      const validationMsg = formSteps[step].querySelector('.validation-message');
+      if (validationMsg) validationMsg.style.display = 'none';
+    }
+
     document.addEventListener('click', function(e) {
       if (e.target.matches('.next-btn')) {
-        currentStep = Math.min(currentStep + 1, formSteps.length - 1);
-        showStep(currentStep);
+        if (validateCurrentStep()) {
+          currentStep = Math.min(currentStep + 1, formSteps.length - 1);
+          showStep(currentStep);
+        }
       } else if (e.target.matches('.back-btn')) {
         currentStep = Math.max(currentStep - 1, 0);
         showStep(currentStep);
