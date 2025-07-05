@@ -98,6 +98,7 @@
       <div class="form-step">
         <label>Your email address:</label>
         <input type="email" name="email" required />
+        <div class="validation-message">Please enter a valid email address.</div>
         <div class="form-navigation">
           <button type="button" class="back-btn">Back</button>
           <button type="button" class="next-btn">Next</button>
@@ -194,90 +195,114 @@
       "Yemen", "Zambia", "Zimbabwe"
     ];
 
-    function createTags(containerId) {
-      const container = document.getElementById(containerId);
-      const inputName = containerId.replace('Countries', '');
-      countries.forEach(country => {
-        const label = document.createElement('label');
-        label.className = 'checkbox-tag';
-        label.innerHTML = `<input type="checkbox" name="${inputName}[]" value="${country}">${country}`;
-        container.appendChild(label);
-      });
-    }
-    ['passportCountries', 'residencyCountries', 'visaCountries'].forEach(createTags);
+  function createTags(containerId) {
+    const container = document.getElementById(containerId);
+    const inputName = containerId.replace('Countries', '');
+    countries.forEach(country => {
+      const label = document.createElement('label');
+      label.className = 'checkbox-tag';
+      label.innerHTML = `<input type="checkbox" name="${inputName}[]" value="${country}">${country}`;
+      container.appendChild(label);
+    });
+  }
+  ['passportCountries', 'residencyCountries', 'visaCountries'].forEach(createTags);
 
-    const formOverlay = document.getElementById('formOverlay');
-    const startBtn = document.getElementById('startBtn');
-    const form = document.getElementById('travelForm');
-    const formSteps = document.querySelectorAll('.form-step');
-    const progressBarFill = document.querySelector('.progress-bar-fill');
-    let currentStep = 0;
+  const formOverlay = document.getElementById('formOverlay');
+  const startBtn = document.getElementById('startBtn');
+  const form = document.getElementById('travelForm');
+  const formSteps = document.querySelectorAll('.form-step');
+  const progressBarFill = document.querySelector('.progress-bar-fill');
+  let currentStep = 0;
 
-    startBtn.addEventListener('click', () => formOverlay.classList.add('visible'));
+  startBtn.addEventListener('click', () => formOverlay.classList.add('visible'));
 
-    function showStep(step) {
-      formSteps.forEach((s, i) => s.style.display = i === step ? 'block' : 'none');
-      updateProgressBar();
-      hideValidationMessage(step);
-    }
+  function showStep(step) {
+    formSteps.forEach((s, i) => s.style.display = i === step ? 'block' : 'none');
+    updateProgressBar();
+    hideValidationMessage(step);
+  }
 
-    function updateProgressBar() {
-      const percent = ((currentStep + 1) / formSteps.length) * 100;
-      progressBarFill.style.width = percent + '%';
-    }
+  function updateProgressBar() {
+    const percent = ((currentStep + 1) / formSteps.length) * 100;
+    progressBarFill.style.width = percent + '%';
+  }
 
-    function validateCurrentStep() {
-      const currentFormStep = formSteps[currentStep];
-      const validationMsg = currentFormStep.querySelector('.validation-message');
-      const requiredGroups = [
-        "passport[]", "visaTypes[]", "interests[]"
-      ];
-      if (requiredGroups.some(name => currentFormStep.querySelector(`input[name="${name}"]`))) {
-        const inputs = currentFormStep.querySelectorAll('input[type="checkbox"]:checked');
-        if (inputs.length === 0) {
-          if (validationMsg) validationMsg.style.display = 'block';
-          return false;
-        }
+  function validateCurrentStep() {
+    const currentFormStep = formSteps[currentStep];
+    const validationMsg = currentFormStep.querySelector('.validation-message');
+    const requiredGroups = [
+      "passport[]", "visaTypes[]", "interests[]"
+    ];
+    if (requiredGroups.some(name => currentFormStep.querySelector(`input[name="${name}"]`))) {
+      const inputs = currentFormStep.querySelectorAll('input[type="checkbox"]:checked');
+      if (inputs.length === 0) {
+        if (validationMsg) validationMsg.style.display = 'block';
+        return false;
       }
-      if (validationMsg) validationMsg.style.display = 'none';
+    }
+    // Additional check for email field
+    if (currentFormStep.querySelector('input[name="email"]')) {
+      return validateEmailField();
+    }
+    if (validationMsg) validationMsg.style.display = 'none';
+    return true;
+  }
+
+  function validateEmailField() {
+    const emailField = form.querySelector('input[name="email"]');
+    const emailValidationMsg = emailField.parentElement.querySelector('.validation-message');
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(emailField.value.trim())) {
+      emailValidationMsg.style.display = 'block';
+      return false;
+    } else {
+      emailValidationMsg.style.display = 'none';
       return true;
     }
+  }
 
-    function hideValidationMessage(step) {
-      const validationMsg = formSteps[step].querySelector('.validation-message');
-      if (validationMsg) validationMsg.style.display = 'none';
-    }
+  function hideValidationMessage(step) {
+    const validationMsg = formSteps[step].querySelector('.validation-message');
+    if (validationMsg) validationMsg.style.display = 'none';
+  }
 
-    document.addEventListener('click', function(e) {
-      if (e.target.matches('.next-btn')) {
-        if (validateCurrentStep()) {
-          currentStep = Math.min(currentStep + 1, formSteps.length - 1);
-          showStep(currentStep);
-        }
-      } else if (e.target.matches('.back-btn')) {
-        currentStep = Math.max(currentStep - 1, 0);
-        showStep(currentStep);
-      } else if (e.target.matches('.skip-btn')) {
+  document.addEventListener('click', function(e) {
+    if (e.target.matches('.next-btn')) {
+      if (validateCurrentStep()) {
         currentStep = Math.min(currentStep + 1, formSteps.length - 1);
         showStep(currentStep);
       }
-    });
+    } else if (e.target.matches('.back-btn')) {
+      currentStep = Math.max(currentStep - 1, 0);
+      showStep(currentStep);
+    } else if (e.target.matches('.skip-btn')) {
+      currentStep = Math.min(currentStep + 1, formSteps.length - 1);
+      showStep(currentStep);
+    }
+  });
 
-    form.addEventListener('change', (e) => {
-      if (e.target.name === "visaTypes[]") {
-        const otherInput = document.getElementById("otherVisaInputContainer");
-        const isOtherSelected = [...form.querySelectorAll('input[name="visaTypes[]"]')].some(i => i.value === "Other" && i.checked);
-        otherInput.style.display = isOtherSelected ? "block" : "none";
-      }
-    });
+  form.addEventListener('submit', function(e) {
+    if (!validateEmailField()) {
+      e.preventDefault();
+      form.querySelector('input[name="email"]').focus();
+    }
+  });
 
-    document.addEventListener('change', function(e) {
-      if (e.target.closest('.checkbox-tag')) {
-        e.target.closest('.checkbox-tag').classList.toggle('selected', e.target.checked);
-      }
-    });
+  form.addEventListener('change', (e) => {
+    if (e.target.name === "visaTypes[]") {
+      const otherInput = document.getElementById("otherVisaInputContainer");
+      const isOtherSelected = [...form.querySelectorAll('input[name="visaTypes[]"]')].some(i => i.value === "Other" && i.checked);
+      otherInput.style.display = isOtherSelected ? "block" : "none";
+    }
+  });
 
-    showStep(currentStep);
-  </script>
+  document.addEventListener('change', function(e) {
+    if (e.target.closest('.checkbox-tag')) {
+      e.target.closest('.checkbox-tag').classList.toggle('selected', e.target.checked);
+    }
+  });
+
+  showStep(currentStep);
+</script>
 </body>
 </html>
